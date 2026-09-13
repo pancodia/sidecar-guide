@@ -1,0 +1,32 @@
+---
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+const { title, description, active } = Astro.props;
+const favicon =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="27" fill="#3a7d72"/><rect x="21" y="29" width="53" height="70" rx="11" fill="#fff"/><rect x="80" y="45" width="27" height="54" rx="8" fill="#fff"/><circle cx="88.5" cy="87" r="3.4" fill="#e0a838"/></svg>'
+  );
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={favicon} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+  </head>
+  <body>
+    <Nav active={active} />
+    <slot />
+    <Footer />
+  </body>
+</html>

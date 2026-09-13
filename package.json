@@ -1,0 +1,15 @@
+{
+  "name": "sidecar-guide",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Guide & landing site for Sidecar",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.3.2"
+  }
+}

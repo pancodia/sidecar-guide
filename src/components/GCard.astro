@@ -1,0 +1,9 @@
+---
+const { href, title, more = "Learn more →" } = Astro.props;
+---
+<a class="gcard" href={href}>
+  <span class="ic"><slot name="icon" /></span>
+  <h3>{title}</h3>
+  <p><slot /></p>
+  <span class="more-link">{more}</span>
+</a>

@@ -1,0 +1,7 @@
+---
+const { src, alt, width, height } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<div class="panel-frame">
+  <img src={`${base}assets/screenshots/${src}`} width={width} height={height} alt={alt} />
+</div>

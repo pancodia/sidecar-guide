@@ -1,21 +1,28 @@
-<!--meta {"title":"Sidecar features — everything it can do","desc":"A deep dive on every Sidecar feature: one conversation across pages, text/image/video in a single thread, highlight-to-ask, answers with sources, find and reopen chats, read aloud, and your choice of AI backend.","nav":"features"}-->
+---
+import Base from "../layouts/Base.astro";
+import Kf from "../components/Kf.astro";
+import PanelShot from "../components/PanelShot.astro";
+import BrowserComposite from "../components/BrowserComposite.astro";
+import BrowserShot from "../components/BrowserShot.astro";
+const base = import.meta.env.BASE_URL;
+const title = "Sidecar features — everything it can do";
+const description =
+  "A deep dive on every Sidecar feature: one conversation across pages, text/image/video in a single thread, highlight-to-ask, answers with sources, find and reopen chats, read aloud, and your choice of AI backend.";
+---
+<Base title={title} description={description} active="features">
+  <section class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">Features</p>
+      <h1>Everything Sidecar can do.</h1>
+      <p>Chatting with one page is the easy part. Sidecar is built for how you actually browse — many pages, many kinds of content, one continuous conversation, on the AI you already pay for.</p>
+    </div>
+  </section>
 
-<section class="page-head">
-  <div class="wrap">
-    <p class="eyebrow">Features</p>
-    <h1>Everything Sidecar can do.</h1>
-    <p>Chatting with one page is the easy part. Sidecar is built for how you actually browse — many pages, many kinds of content, one continuous conversation, on the AI you already pay for.</p>
-  </div>
-</section>
+  <section style="padding-top:24px">
+    <div class="wrap">
+      <div class="kf-list">
 
-<section style="padding-top:24px">
-  <div class="wrap">
-    <div class="kf-list">
-
-      <div class="kf" id="across-pages">
-        <div class="kf-text">
-          <p class="eyebrow">Across pages</p>
-          <h3>One conversation that follows you</h3>
+        <Kf id="across-pages" eyebrow="Across pages" title="One conversation that follows you">
           <p>A Sidecar conversation isn't tied to a single tab. Start it on one page and keep talking as you move around — switch tabs, follow a link, open something new, and you're still in the same thread.</p>
           <p>It picks up each new page the first time you ask about it, so the answer is grounded in whatever you're looking at now — no restarting, no pasting.</p>
           <ul class="kf-points">
@@ -24,22 +31,15 @@
             <li><b>Never in the background.</b> Between questions, it isn't reading anything.</li>
           </ul>
           <p class="kf-note">Works on ordinary web pages, not on browser pages like chrome://settings.</p>
-        </div>
-        <div class="kf-art">
-          <div class="browser-frame">
-            <div class="browser-bar"><i></i><i></i><i></i><span class="addr">wheelhouse.example/how-a-bicycle-stays-upright</span></div>
-            <div class="browser-body">
-              <div class="bpage"><img src="assets/screenshots/browser-page.png" width="3520" height="3600" alt="A web article titled 'How a bicycle stays upright' open in the browser." /></div>
-              <div class="bpanel"><img src="assets/screenshots/hero-answer.png" width="1536" height="2560" alt="Sidecar answering about the page in the side panel." /></div>
-            </div>
-          </div>
-        </div>
-      </div>
+          <BrowserComposite slot="art"
+            addr="wheelhouse.example/how-a-bicycle-stays-upright"
+            pageSrc="browser-page.png" pageW={3520} pageH={3600}
+            pageAlt="A web article titled 'How a bicycle stays upright' open in the browser."
+            panelSrc="hero-answer.png" panelW={1536} panelH={2560}
+            panelAlt="Sidecar answering about the page in the side panel." />
+        </Kf>
 
-      <div class="kf" id="multimodal">
-        <div class="kf-text">
-          <p class="eyebrow">Text, images &amp; video</p>
-          <h3>Every kind of content, one thread</h3>
+        <Kf id="multimodal" eyebrow={"Text, images & video"} title="Every kind of content, one thread">
           <p>Real research isn't only text. In one Sidecar conversation you can ask about an article, drop in a screenshot or a photo, attach a PDF or a text file, then turn to a video — and it all stays in the same thread.</p>
           <p>Sidecar carries every kind of content forward together, so a later question can build on the picture you shared a few messages ago or the video you just watched.</p>
           <ul class="kf-points">
@@ -48,16 +48,10 @@
             <li><b>Video &amp; audio</b> — a video's transcript, or what Sidecar hears when you listen.</li>
           </ul>
           <p class="kf-note">Each single message carries one attachment — an image, a file, or a quote — while page and video context ride alongside. Across the thread, it's all there.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/multimodal-thread.png" width="1536" height="2880" alt="One Sidecar thread mixing an attached chart image, a 'Sidecar looked at the video' note, and a text answer that ties them together." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="multimodal-thread.png" width={1536} height={2880} alt="One Sidecar thread mixing an attached chart image, a 'Sidecar looked at the video' note, and a text answer that ties them together." />
+        </Kf>
 
-      <div class="kf" id="video">
-        <div class="kf-text">
-          <p class="eyebrow">Video</p>
-          <h3>Ask about what you're watching</h3>
+        <Kf id="video" eyebrow="Video" title="Ask about what you're watching">
           <p>Ask about a video while it plays. If the site shows a transcript — on YouTube, click <b>Show transcript</b> — Sidecar reads it. If there's no transcript, turn on <b>Listen</b> and it transcribes the audio with Whisper, right on your Mac.</p>
           <p>Either way, answers are about what's actually being said or shown, up to the point you've watched.</p>
           <ul class="kf-points">
@@ -66,16 +60,10 @@
             <li><b>On your computer.</b> Listening uses Whisper on your Mac; Sidecar can fetch the speech model the first time.</li>
           </ul>
           <p class="kf-note">The audio stays on your Mac; when you ask, the video's transcript text goes to your assistant, the same as page text. Listening is optional and off until you ask for it.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/video-answer.png" width="1536" height="2560" alt="Sidecar answering a question about a video, with a 'Sidecar looked at the video' note and a listen affordance." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="video-answer.png" width={1536} height={2560} alt="Sidecar answering a question about a video, with a 'Sidecar looked at the video' note and a listen affordance." />
+        </Kf>
 
-      <div class="kf" id="screen">
-        <div class="kf-text">
-          <p class="eyebrow">On screen</p>
-          <h3>Show it anything you can see</h3>
+        <Kf id="screen" eyebrow="On screen" title="Show it anything you can see">
           <p>When text alone can't describe it — a chart, a diagram, a photo, a page's layout — show Sidecar the screen. Screenshot the visible area or the whole page, crop a region, or attach an image.</p>
           <p>You can also attach a PDF or a text/code file. Sidecar reads a PDF's text and sends that, not a photo of the pages.</p>
           <ul class="kf-points">
@@ -84,16 +72,10 @@
             <li><b>Quick access</b> from the send bar's camera and paperclip — or a right-click.</li>
           </ul>
           <p class="kf-note">A captured picture is kept in the chat only if you turn on "save the pictures" (off by default).</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/screen-attach.png" width="1536" height="2560" alt="A captured chart attached to a message, with the assistant answering a question about it." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="screen-attach.png" width={1536} height={2560} alt="A captured chart attached to a message, with the assistant answering a question about it." />
+        </Kf>
 
-      <div class="kf" id="highlight">
-        <div class="kf-text">
-          <p class="eyebrow">Highlight to ask</p>
-          <h3>Select text, ask about it</h3>
+        <Kf id="highlight" eyebrow="Highlight to ask" title="Select text, ask about it">
           <p>Reading something and want to ask about just one line? Select text on any page and a small <b>Ask in Sidecar</b> button appears next to your cursor. One click sends the selection into the panel.</p>
           <p>It's off by default, so it never gets in your way until you want it — and nothing leaves the page until you click.</p>
           <ul class="kf-points">
@@ -101,19 +83,10 @@
             <li><b>Off by default.</b> Turn it on in Settings, or from the right-click menu.</li>
             <li><b>Toggle in place.</b> Right-click a selection to switch it off; right-click a blank spot to switch it back on.</li>
           </ul>
-        </div>
-        <div class="kf-art">
-          <div class="browser-frame">
-            <div class="browser-bar"><i></i><i></i><i></i><span class="addr">wheelhouse.example/how-a-bicycle-stays-upright</span></div>
-            <img src="assets/screenshots/pill-on-page.png" width="3600" height="2240" alt="A web article with a sentence highlighted and a green 'Ask in Sidecar' button floating next to the selection." />
-          </div>
-        </div>
-      </div>
+          <BrowserShot slot="art" addr="wheelhouse.example/how-a-bicycle-stays-upright" src="pill-on-page.png" width={3600} height={2240} alt="A web article with a sentence highlighted and a green 'Ask in Sidecar' button floating next to the selection." />
+        </Kf>
 
-      <div class="kf" id="sources">
-        <div class="kf-text">
-          <p class="eyebrow">Answers with sources</p>
-          <h3>Web-backed, and shows its work</h3>
+        <Kf id="sources" eyebrow="Answers with sources" title="Web-backed, and shows its work">
           <p>When a question needs current information, your assistant looks it up on its own — there's no search button to press.</p>
           <p>The answer lists the reference links it drew on, under <b>Sources</b>, so you can open them yourself. Copy the answer and the links come along.</p>
           <ul class="kf-points">
@@ -122,16 +95,10 @@
             <li><b>Copy keeps them.</b> Copying an answer includes its source links.</li>
           </ul>
           <p class="kf-note">A web search goes out through your subscription, like your chat — one of the moments Sidecar reaches the internet.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/sources.png" width="1536" height="2560" alt="A Sidecar answer with a 'Sources (2)' list of reference links underneath." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="sources.png" width={1536} height={2560} alt="A Sidecar answer with a 'Sources (2)' list of reference links underneath." />
+        </Kf>
 
-      <div class="kf" id="image-search">
-        <div class="kf-text">
-          <p class="eyebrow">Pictures from the web</p>
-          <h3>See it, not just read about it</h3>
+        <Kf id="image-search" eyebrow="Pictures from the web" title="See it, not just read about it">
           <p>Ask to see what something looks like and Sidecar searches the web for pictures of it — grouped by subject when you ask about several things at once.</p>
           <p>On a fresh ask the previews load right away, each straight from the website it lives on — so that site sees the request. Reopen the conversation later and the pictures stay hidden until you click <b>Show previews</b>, so an old chat never quietly re-fetches them.</p>
           <ul class="kf-points">
@@ -140,16 +107,10 @@
             <li><b>Off by default.</b> Turn on "show pictures from the web" in Settings.</li>
           </ul>
           <p class="kf-note">Asking makes the companion app open web pages to find pictures; the previews then load each thumbnail from its own site.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/image-search.png" width="1536" height="2400" alt="A reopened conversation showing '8 pictures found on the web' with a 'Show previews' button — the pictures stay hidden until you click." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="image-search.png" width={1536} height={2400} alt="A reopened conversation showing '8 pictures found on the web' with a 'Show previews' button — the pictures stay hidden until you click." />
+        </Kf>
 
-      <div class="kf" id="find">
-        <div class="kf-text">
-          <p class="eyebrow">Find &amp; reopen</p>
-          <h3>Every past chat, one search away</h3>
+        <Kf id="find" eyebrow={"Find & reopen"} title="Every past chat, one search away">
           <p>Every conversation is saved (unless you turn saving off), so nothing you asked is lost. The bubble-with-clock button opens a searchable list, split into <b>About this page</b> and <b>All conversations</b>.</p>
           <p>Search across all of them by title, the pages they were about, or anything said in them — then pick one back up right where you are, even on a page you never chatted about.</p>
           <ul class="kf-points">
@@ -158,16 +119,10 @@
             <li><b>All on your Mac.</b> The search never leaves your computer.</li>
           </ul>
           <p class="kf-note">Started a new chat by accident? A banner takes you back to the one you left.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/find-conversation.png" width="1536" height="2560" alt="Sidecar's find-a-conversation browser: a search box over a list split into 'About this page' and 'All conversations'." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="find-conversation.png" width={1536} height={2560} alt="Sidecar's find-a-conversation browser: a search box over a list split into 'About this page' and 'All conversations'." />
+        </Kf>
 
-      <div class="kf" id="aloud">
-        <div class="kf-text">
-          <p class="eyebrow">Read aloud</p>
-          <h3>Hear an answer instead of reading it</h3>
+        <Kf id="aloud" eyebrow="Read aloud" title="Hear an answer instead of reading it">
           <p>Every answer has a speaker button. Click it and Sidecar reads the answer aloud with a voice already on your Mac.</p>
           <p>Want something warmer? Settings can download an optional, natural offline voice (English for now) — and it still runs entirely on your computer.</p>
           <ul class="kf-points">
@@ -176,16 +131,10 @@
             <li><b>Never online.</b> Reading aloud stays on your computer; Sidecar skips the online voices some browsers offer.</li>
           </ul>
           <p class="kf-note">Pick the natural voice before downloading it and Sidecar tells you and stops, rather than falling back to an online voice.</p>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/read-aloud.png" width="1536" height="2560" alt="An answer in the Sidecar panel with the speaker (read-aloud) button highlighted next to the copy button." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="read-aloud.png" width={1536} height={2560} alt="An answer in the Sidecar panel with the speaker (read-aloud) button highlighted next to the copy button." />
+        </Kf>
 
-      <div class="kf" id="backend">
-        <div class="kf-text">
-          <p class="eyebrow">Your choice of AI</p>
-          <h3>The agent you already pay for</h3>
+        <Kf id="backend" eyebrow="Your choice of AI" title="The agent you already pay for">
           <p>Sidecar runs on the AI you already use. Choose <b>Claude Code</b> (your Claude subscription) or <b>Codex</b> (your ChatGPT subscription) in Settings — you only need one.</p>
           <p>Then pick the model for each message: Sonnet, Opus, or Haiku for Claude, or whichever models your Codex account offers.</p>
           <ul class="kf-points">
@@ -193,25 +142,23 @@
             <li><b>Pick per message</b> — the model button in the send bar switches models.</li>
             <li><b>More to come.</b> Built on a real backend abstraction, designed to support more agents over time.</li>
           </ul>
-        </div>
-        <div class="kf-art">
-          <div class="panel-frame"><img src="assets/screenshots/backend-settings.png" width="1536" height="2560" alt="Sidecar's Settings → Chat: a Backend choice between Claude Code and Codex, and a Model-for-chat choice of Sonnet, Opus, or Haiku." /></div>
-        </div>
-      </div>
+          <PanelShot slot="art" src="backend-settings.png" width={1536} height={2560} alt="Sidecar's Settings → Chat: a Backend choice between Claude Code and Codex, and a Model-for-chat choice of Sonnet, Opus, or Haiku." />
+        </Kf>
 
-    </div>
-  </div>
-</section>
-
-<section class="alt">
-  <div class="wrap">
-    <div class="cta-band">
-      <h2>See it on your own pages.</h2>
-      <p>Set Sidecar up once and start a conversation that follows you across everything you read and watch.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="setup.html">Set it up</a>
-        <a class="btn btn-ghost" href="privacy.html">Privacy &amp; control</a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>See it on your own pages.</h2>
+        <p>Set Sidecar up once and start a conversation that follows you across everything you read and watch.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={`${base}setup.html`}>Set it up</a>
+          <a class="btn btn-ghost" href={`${base}privacy.html`}>Privacy &amp; control</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

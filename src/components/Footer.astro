@@ -1,0 +1,22 @@
+---
+import { REVIEWED_VERSION, BUILD_DATE } from "../config";
+const base = import.meta.env.BASE_URL;
+const links = [
+  { href: "features.html", label: "Features" },
+  { href: "setup.html", label: "Setup" },
+  { href: "guide.html", label: "Using it" },
+  { href: "privacy.html", label: "Privacy" },
+];
+---
+<footer>
+  <div class="wrap">
+    <a class="logo" href={base} aria-label="Sidecar">
+      <span class="mark"><svg viewBox="0 0 128 128" width="24" height="24" aria-hidden="true"><rect width="128" height="128" rx="27" fill="#3a7d72"/><rect x="21" y="29" width="53" height="70" rx="11" fill="#fff"/><rect x="80" y="45" width="27" height="54" rx="8" fill="#fff"/><circle cx="88.5" cy="87" r="3.4" fill="#e0a838"/></svg></span>
+      <span class="name" style="font-size:16px">Sidecar</span>
+    </a>
+    <div class="flinks">
+      {links.map((l) => <a href={`${base}${l.href}`}>{l.label}</a>)}
+    </div>
+    <span class="rt">Apple-Silicon Mac (M1+), macOS 13+, Chrome or Brave · reviewed against Sidecar {REVIEWED_VERSION} · updated {BUILD_DATE}</span>
+  </div>
+</footer>

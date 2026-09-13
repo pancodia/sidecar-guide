@@ -1,48 +1,50 @@
 # Sidecar — guide & landing site
 
-A small multi-page site for **Sidecar**, the local-first Chrome/Brave side-panel
-AI assistant that keeps one conversation as you browse — across pages, text,
-images, and video, on the AI agent you already pay for.
+The guide/landing site for **Sidecar**, the local-first side-panel AI assistant
+for Chrome & Brave. Built with [Astro](https://astro.build); hosted on GitHub
+Pages at **<https://pancodia.github.io/sidecar-guide/>**.
 
-Meant to be embedded in the main project as the `site/` git submodule and hosted
-on GitHub Pages.
+Embedded in the main project as the `site/` git submodule.
 
 ## Layout
 
 ```
 src/
-  partials/nav.html, footer.html   shared chrome
-  pages/*.html                     one file per page (+ a <!--meta {...}--> header)
-styles.css                         all styles (linked, not inlined)
-build.mjs                          zero-dep builder: src/ -> root *.html
-assets/screenshots/                real, neutral, PII-free captures
-*.html                             BUILT output (committed; Pages serves these)
-.nojekyll                          tell Pages not to process the tree
+  pages/*.astro        one file per page (index, features, setup, guide, privacy)
+  layouts/Base.astro   <head> + shared nav/footer wrapper
+  components/*.astro    Nav, Footer, Kf (feature block), GCard, Pillar,
+                        PanelShot, BrowserShot, BrowserComposite
+  styles/global.css     all styles (design tokens, both themes)
+  config.ts             site constants (REVIEWED_VERSION, BUILD_DATE, …)
+public/
+  assets/screenshots/   real, neutral, PII-free captures
+  .nojekyll
+astro.config.mjs        site + base ('/sidecar-guide/') config
 ```
 
-## Build
+## Develop
 
 ```
-node build.mjs
+npm install
+npm run dev       # local dev server (http://localhost:4321/sidecar-guide/)
+npm run build     # -> dist/
+npm run preview   # serve the built dist/ at the real base path
 ```
 
-Reads the partials + `src/pages/*.html` and writes the root `*.html`. Edit sources
-under `src/` (and `styles.css`), never the built root files. Commit both source and
-output — GitHub Pages serves the built files as-is.
+Edit content under `src/`. The design tokens and both light/dark themes live in
+`src/styles/global.css`. **`base` must stay `/sidecar-guide/`** in
+`astro.config.mjs` — the site is served from a repo subpath, so every asset/link
+is resolved against it (use `import.meta.env.BASE_URL` for any new asset path).
 
-## Preview locally
+Versioning: `package.json`'s version is an inert site-internal number. The
+product release the copy was checked against is `REVIEWED_VERSION` in
+`src/config.ts`; the doc's own freshness is `BUILD_DATE` (auto-set at build),
+shown in the footer.
 
-Open a built `index.html` in a browser, or serve the folder:
+## Deploy
 
-```
-python3 -m http.server -d . 8000   # then visit http://localhost:8000
-```
-
-## Hosting on GitHub Pages
-
-1. Create a **public** GitHub repo (e.g. `sidecar-guide`) and push this folder.
-2. **Settings → Pages → Deploy from a branch**, branch `main`, folder `/ (root)`.
-3. Publishes at `https://<user>.github.io/<repo>/`. All links are relative, so it
-   works under the `/<repo>/` sub-path.
+Automatic via **GitHub Actions** (`.github/workflows/deploy.yml`): every push to
+`main` builds with Astro and publishes to Pages. Nothing to build or commit by
+hand — `dist/` is gitignored. Pages source is set to "GitHub Actions".
 
 Reviewed against Sidecar 0.1.5.

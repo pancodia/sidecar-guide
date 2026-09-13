@@ -1,0 +1,12 @@
+---
+// A key-feature deep-dive block: text (heading + prose + points) beside its art.
+const { id, eyebrow, title } = Astro.props;
+---
+<div class="kf" id={id}>
+  <div class="kf-text">
+    <p class="eyebrow">{eyebrow}</p>
+    <h3>{title}</h3>
+    <slot />
+  </div>
+  <div class="kf-art"><slot name="art" /></div>
+</div>

@@ -1,0 +1,8 @@
+---
+const { addr, src, alt, width, height } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<div class="browser-frame">
+  <div class="browser-bar"><i></i><i></i><i></i><span class="addr">{addr}</span></div>
+  <img src={`${base}assets/screenshots/${src}`} width={width} height={height} alt={alt} />
+</div>

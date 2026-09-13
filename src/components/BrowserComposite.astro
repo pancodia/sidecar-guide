@@ -1,0 +1,11 @@
+---
+const { addr, pageSrc, pageAlt, pageW, pageH, panelSrc, panelAlt, panelW, panelH } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<div class="browser-frame">
+  <div class="browser-bar"><i></i><i></i><i></i><span class="addr">{addr}</span></div>
+  <div class="browser-body">
+    <div class="bpage"><img src={`${base}assets/screenshots/${pageSrc}`} width={pageW} height={pageH} alt={pageAlt} /></div>
+    <div class="bpanel"><img src={`${base}assets/screenshots/${panelSrc}`} width={panelW} height={panelH} alt={panelAlt} /></div>
+  </div>
+</div>
