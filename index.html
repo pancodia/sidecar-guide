@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sidecar — chat with the page you're reading</title>
+<meta name="description" content="A personal AI in your browser's side panel — ask about the page you're reading or the video you're watching, using the Claude or Codex you already pay for. Runs on your own Mac." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+<style>
+  :root {
+    --bg: #f4f7f3; --surface: #ffffff; --surface-2: #eef2ec; --border: #e0e7e0;
+    --ink: #16201d; --soft: #46534d; --faint: #6b7770;
+    --accent: #2f8175; --accent-ink: #245f56; --on-accent: #ffffff;
+    --gold: #d9a12e;
+    --grad-a: #5aa89b; --grad-b: #3a7d72; --grad-c: #225851;
+    --shadow: 0 18px 40px -24px rgba(20,50,42,.45);
+    --shadow-sm: 0 6px 18px -10px rgba(20,50,42,.35);
+    --display: "Fraunces", Georgia, "Times New Roman", serif;
+    --body: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --maxw: 1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1512; --surface: #16211c; --surface-2: #1b2721; --border: #2b352f;
+      --ink: #eaf1ec; --soft: #b3c0b8; --faint: #8a978f;
+      --accent: #63cbb8; --accent-ink: #8fded0; --on-accent: #0c1411;
+      --gold: #e6b856;
+      --grad-a: #2f6f65; --grad-b: #245349; --grad-c: #16352f;
+      --shadow: 0 20px 46px -22px rgba(0,0,0,.7);
+      --shadow-sm: 0 8px 20px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1512; --surface: #16211c; --surface-2: #1b2721; --border: #2b352f;
+    --ink: #eaf1ec; --soft: #b3c0b8; --faint: #8a978f;
+    --accent: #63cbb8; --accent-ink: #8fded0; --on-accent: #0c1411;
+    --gold: #e6b856; --grad-a: #2f6f65; --grad-b: #245349; --grad-c: #16352f;
+    --shadow: 0 20px 46px -22px rgba(0,0,0,.7); --shadow-sm: 0 8px 20px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--accent-ink); }
+  ::selection { background: rgba(47,129,117,.22); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 12px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+  h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.1; }
+  h3 { font-size: 21px; line-height: 1.2; }
+  p { margin: 0 0 16px; }
+  .lead { font-size: 19px; color: var(--soft); }
+
+  /* Nav */
+  header.nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
+  .nav .wrap { display: flex; align-items: center; gap: 14px; height: 62px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .logo .mark { width: 30px; height: 30px; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .logo .name { font-family: var(--display); font-weight: 600; font-size: 20px; }
+  .nav nav { margin-left: auto; display: flex; gap: 26px; }
+  .nav nav a { color: var(--soft); text-decoration: none; font-size: 15px; }
+  .nav nav a:hover { color: var(--ink); }
+  @media (max-width: 680px) { .nav nav { display: none; } }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--body); font-weight: 600; font-size: 15px; padding: 11px 20px; border-radius: 999px; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+  .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-sm); }
+  .btn-primary:hover { filter: brightness(1.05); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: -20% -10% auto -10%; height: 520px; background: radial-gradient(60% 80% at 78% 18%, color-mix(in srgb, var(--grad-a) 40%, transparent), transparent 70%); pointer-events: none; }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding-top: 64px; padding-bottom: 64px; }
+  .hero h1 { font-size: clamp(38px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; }
+  .hero h1 .accent { color: var(--accent-ink); }
+  .hero .lead { margin-top: 20px; max-width: 30ch; }
+  .req { font-family: var(--mono); font-size: 12.5px; color: var(--soft); margin: 22px 0 26px; line-height: 1.9; }
+  .req b { color: var(--ink); font-weight: 500; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-art { position: relative; justify-self: center; }
+  @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; gap: 36px; } .hero-art { order: -1; } }
+
+  /* Device frame for the panel shots */
+  .panel-frame { width: 340px; max-width: 84vw; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+  .panel-frame img { width: 100%; }
+  .browser-frame { width: 100%; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; background: var(--surface); }
+  .browser-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--border); display: block; }
+  .browser-bar .addr { margin-left: 10px; font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+  /* Pillars */
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 8px 0 56px; }
+  .pillar { border-top: 2px solid var(--accent); padding-top: 14px; }
+  .pillar h3 { font-family: var(--body); font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .pillar p { color: var(--soft); font-size: 15px; margin: 0; }
+  @media (max-width: 720px) { .pillars { grid-template-columns: 1fr; gap: 22px; } }
+
+  section { padding: 72px 0; }
+  section.alt { background: var(--surface-2); }
+  .sec-head { max-width: 60ch; margin-bottom: 40px; }
+  .sec-head p { color: var(--soft); font-size: 18px; margin-top: 8px; }
+
+  /* Feature rows */
+  .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 30px 0; }
+  .feature:nth-child(even) .ftext { order: 2; }
+  .feature .fart { display: flex; justify-content: center; }
+  .feature h3 { font-size: 26px; margin-bottom: 10px; }
+  .feature p { color: var(--soft); margin: 0; }
+  .feature .fnote { font-family: var(--mono); font-size: 12.5px; color: var(--faint); margin-top: 14px; }
+  @media (max-width: 820px) { .feature { grid-template-columns: 1fr; gap: 26px; padding: 22px 0; } .feature:nth-child(even) .ftext { order: 0; } }
+
+  /* "More it can do" grid */
+  .more { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .more .item { display: flex; gap: 14px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+  .more .item .ic { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
+  .more .item .ic svg { width: 20px; height: 20px; }
+  .more .item h3 { font-family: var(--body); font-weight: 600; font-size: 16px; margin-bottom: 3px; }
+  .more .item p { color: var(--soft); font-size: 14.5px; margin: 0; }
+  @media (max-width: 620px) { .more { grid-template-columns: 1fr; } }
+
+  /* How it works */
+  .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .flow .node { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .flow .node .n { font-family: var(--mono); font-size: 12px; color: var(--gold); letter-spacing: .1em; }
+  .flow .node h3 { font-family: var(--body); font-weight: 600; font-size: 16px; margin: 6px 0 4px; }
+  .flow .node p { color: var(--soft); font-size: 14.5px; margin: 0; }
+  @media (max-width: 720px) { .flow { grid-template-columns: 1fr; } }
+  .outbound { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 18px 22px; font-size: 15.5px; }
+  .outbound b { color: var(--ink); }
+
+  /* Setup steps */
+  .steps { counter-reset: step; display: grid; gap: 14px; max-width: 720px; }
+  .step { counter-increment: step; position: relative; padding: 18px 20px 18px 62px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+  .step::before { content: counter(step); position: absolute; left: 16px; top: 16px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-family: var(--mono); font-weight: 500; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .step h3 { font-family: var(--body); font-weight: 600; font-size: 16.5px; margin-bottom: 3px; }
+  .step p { color: var(--soft); font-size: 15px; margin: 0; }
+  .status-shot { margin-top: 16px; max-width: 460px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
+
+  /* Using-it cards */
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .uicard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; }
+  .uicard .ch { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .uicard .ch h3 { font-family: var(--body); font-weight: 600; font-size: 17px; }
+  .uicard p { color: var(--soft); font-size: 15px; margin: 0; }
+  .glyph { width: 30px; height: 30px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--soft); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .glyph svg { width: 18px; height: 18px; display: block; }
+  .kbd { font-family: var(--mono); font-size: .86em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; }
+  @media (max-width: 620px) { .cards { grid-template-columns: 1fr; } }
+
+  /* Control / privacy */
+  .baseline { background: color-mix(in srgb, var(--gold) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--border)); border-radius: 12px; padding: 16px 20px; font-size: 15.5px; margin-bottom: 20px; }
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 520px; }
+  th, td { text-align: left; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  th { font-family: var(--mono); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--faint); }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .yes { color: var(--accent-ink); font-weight: 600; }
+  .no { color: var(--faint); }
+  .control-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: start; }
+  .control-grid > * { min-width: 0; }
+  @media (max-width: 820px) { .control-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+  footer { padding: 44px 0; border-top: 1px solid var(--border); color: var(--faint); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  footer a { color: var(--soft); }
+  footer .rt { margin-left: auto; font-family: var(--mono); font-size: 12px; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  h2, h3 { scroll-margin-top: 78px; }
+  section[id] { scroll-margin-top: 62px; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Sidecar home">
+      <span class="mark">
+        <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="30" height="30">
+          <defs><linearGradient id="m" x1="0.1" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#5aa89b"/><stop offset="0.52" stop-color="#3a7d72"/><stop offset="1" stop-color="#255851"/></linearGradient></defs>
+          <rect width="128" height="128" rx="27" fill="url(#m)"/>
+          <rect x="21" y="29" width="53" height="70" rx="11" fill="#fff"/><rect x="80" y="45" width="27" height="54" rx="8" fill="#fff"/>
+          <rect x="30" y="46" width="30" height="5" rx="2.5" fill="#357168" opacity="0.32"/><rect x="30" y="58" width="35" height="5" rx="2.5" fill="#357168" opacity="0.32"/>
+          <rect x="86" y="59" width="14" height="5" rx="2.5" fill="#2f8175"/><rect x="86" y="71" width="10" height="5" rx="2.5" fill="#2f8175"/><circle cx="88.5" cy="87" r="3.4" fill="#e0a838"/>
+        </svg>
+      </span>
+      <span class="name">Sidecar</span>
+    </a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#setup">Setup</a>
+      <a href="#using">Using it</a>
+    </nav>
+  </div>
+</header>
+
+<span id="top"></span>
+<div class="hero">
+  <div class="wrap">
+    <div class="htext">
+      <p class="eyebrow">For Chrome &amp; Brave · macOS</p>
+      <h1>Chat with the <span class="accent">page</span> you're reading.</h1>
+      <p class="lead">Sidecar is a personal AI in your browser's side panel — ask about the page in front of you or the video you're watching, answered by the <b>Claude</b> or <b>Codex</b> you already pay for.</p>
+      <p class="req"><b>You'll need:</b> an Apple-Silicon Mac (M1 or newer) · macOS 13+ · Chrome or Brave · a Claude Code or Codex subscription</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#setup">Set it up — about 5 minutes</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="panel-frame">
+        <img src="assets/screenshots/hero-answer.png" width="1536" height="2560" alt="The Sidecar side panel answering the question 'Why does a moving bike stay upright?' about the current page, with a Sonnet byline and a composer that says 'Using this page'." />
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="pillars">
+      <div class="pillar"><h3>Your assistant, your subscription</h3><p>Answers come from Claude or Codex (your ChatGPT subscription) through your own sign-in — no extra account, no separate bill, no API key.</p></div>
+      <div class="pillar"><h3>Nothing goes to the developer</h3><p>No server of ours sits in the middle. No analytics, no tracking, no ads. Your words go only to the assistant you chose.</p></div>
+      <div class="pillar"><h3>Your saved chats live on your Mac</h3><p>Chats are saved on your own computer, and searching them happens there too. You decide what's kept.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What you can do</p>
+      <h2>Made for the page in front of you.</h2>
+      <p>Sidecar reads the page or video you're on — on demand, only when you ask — so its answers are about what you're actually looking at.</p>
+    </div>
+
+    <div class="feature">
+      <div class="ftext">
+        <h3>Highlight anything to ask about it</h3>
+        <p>Select text on any page and a small <b>Ask in Sidecar</b> button appears right by your cursor. One click sends it into the panel. Nothing leaves the page until you click.</p>
+        <p class="fnote">Optional — off by default. Turn it on in Settings or with a right-click.</p>
+      </div>
+      <div class="fart">
+        <div class="browser-frame">
+          <div class="browser-bar"><i></i><i></i><i></i><span class="addr">wheelhouse.example/how-a-bicycle-stays-upright</span></div>
+          <img src="assets/screenshots/pill-on-page.png" width="3600" height="2240" alt="A web article with a sentence highlighted and a green 'Ask in Sidecar' button floating next to the selection." />
+        </div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="ftext">
+        <h3>Find and reopen any past chat</h3>
+        <p>Every conversation is saved (unless you turn saving off). Search across all of them — by title, the pages they were about, or anything said in them — and pick one back up right where you are, even on a page you never chatted about.</p>
+        <p class="fnote">The search runs entirely on your own computer.</p>
+      </div>
+      <div class="fart">
+        <div class="panel-frame"><img src="assets/screenshots/find-conversation.png" width="1536" height="2560" alt="Sidecar's 'find a conversation' browser: a search box over a list split into 'About this page' and 'All conversations', each entry showing its title, time, model, and site." /></div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="ftext">
+        <h3>Every web answer shows its sources</h3>
+        <p>When a question needs current information, the assistant looks it up on its own — no search button. The answer lists the reference links it drew on, so you can open them. Copying the answer brings the links along.</p>
+        <p class="fnote">A web search goes out through your subscription, like your chat does.</p>
+      </div>
+      <div class="fart">
+        <div class="panel-frame"><img src="assets/screenshots/sources.png" width="1536" height="2560" alt="A Sidecar answer about Reykjavík's time zone with a 'Sources (2)' list of reference links underneath." /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><p class="eyebrow">And more</p><h2>The rest of the toolkit.</h2></div>
+    <div class="more">
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span>
+        <div><h3>Ask about a video</h3><p>Reads the video's on-screen transcript, or listens and transcribes with Whisper when there isn't one. Optional — set up in Settings.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+        <div><h3>Ask about anything on screen</h3><p>Screenshot the visible area or the whole page, crop a region, or attach an image, a PDF, or a text file.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></span>
+        <div><h3>Read answers aloud</h3><p>A speaker button on any answer. Uses a voice on your Mac, or an optional natural offline voice you can download.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3.5 9h17M3.5 15h17"/></svg></span>
+        <div><h3>Pick who answers</h3><p>Choose Claude or Codex in Settings, then the model for each message — Sonnet, Opus, Haiku, or your Codex models.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How it works</p>
+      <h2>Three parts, all yours.</h2>
+      <p>Sidecar isn't a website you log into — it's a browser panel plus a small app on your Mac that talks to the AI you already use.</p>
+    </div>
+    <div class="flow">
+      <div class="node"><div class="n">IN YOUR BROWSER</div><h3>The side panel</h3><p>Where you chat. It reads the current tab's text only when you ask, and each conversation belongs to the page you started it on.</p></div>
+      <div class="node"><div class="n">ON YOUR MAC</div><h3>The companion app</h3><p>A small menu-bar app the panel talks to over your own computer — never over the internet. It has to be running for the panel to answer.</p></div>
+      <div class="node"><div class="n">YOUR SUBSCRIPTION</div><h3>Claude or Codex</h3><p>The app runs your own Claude Code or Codex to do the thinking — on your plan, through your sign-in.</p></div>
+    </div>
+    <div class="outbound">
+      <b>What actually leaves your Mac:</b> your question — along with any page text or file you included — goes to the assistant you chose (Anthropic or OpenAI) through your own subscription. A web search, and pages the assistant opens during one, go out the same way. The panel also loads its fonts from Google. Everything else — your saved chats, searching them, reading aloud — stays on your computer.
+    </div>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Setup · about 5 minutes</p>
+      <h2>Getting started.</h2>
+      <p>Sidecar itself needs no terminal; Claude Code and Codex have their own installers. Full step-by-step instructions ship with the download — here's the shape of it.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Install the companion app</h3><p>Open the <b>Sidecar</b> app (a menu-bar app for Apple-Silicon Macs, macOS 13+). Leave it running while you browse.</p></div>
+      <div class="step"><h3>Add the browser extension</h3><p>Add Sidecar to Chrome or Brave, then open the side panel with the toolbar icon or <span class="kbd">⌘⇧Y</span>.</p></div>
+      <div class="step"><h3>Install and sign in to Claude Code or Codex</h3><p>Whichever you'll use — that's the AI doing the answering, on your own subscription. You only need one.</p></div>
+      <div class="step">
+        <h3>Look for “App connected”</h3><p>When the panel's status line shows a green <b>App connected</b>, you're ready to ask your first question.</p>
+        <div class="status-shot"><img src="assets/screenshots/status-connected.png" width="1536" height="224" alt="The top of the Sidecar panel showing the Sidecar mark, a green dot with 'App connected', and the find, new-chat, and settings icons." /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USING IT -->
+<section id="using" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Using it</p>
+      <h2>The everyday moves.</h2>
+      <p>A quick tour of the controls you'll reach for.</p>
+    </div>
+    <div class="cards">
+      <div class="uicard">
+        <div class="ch"><h3>Ask about the page</h3></div>
+        <p>Open the panel on any ordinary web page and just ask — “summarize this”, “what does this mean?”. Press <span class="kbd">Enter</span> to send, <span class="kbd">⇧Enter</span> for a new line. (It works on normal pages, not on <span class="kbd">chrome://</span> pages.)</p>
+      </div>
+      <div class="uicard">
+        <div class="ch">
+          <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.4a8.4 8.4 0 0 1-12.2 7.5L3.5 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.4z"/><path d="M12 8.2v3.4l2.3 1.4"/></svg></span>
+          <h3>Find a past chat</h3>
+        </div>
+        <p>The bubble-with-clock button opens a searchable list of every saved conversation. Click one to pick it back up on the current tab.</p>
+      </div>
+      <div class="uicard">
+        <div class="ch">
+          <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          <h3>Start a new chat</h3>
+        </div>
+        <p>The <b>+</b> button starts fresh. Change your mind? A banner offers to jump back to the conversation you were in.</p>
+      </div>
+      <div class="uicard">
+        <div class="ch">
+          <span class="glyph"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 5.4a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2zm0 3.7a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8z"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(45 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(90 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(135 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(180 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(225 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(270 12 12)"/><rect x="10.7" y="1.9" width="2.6" height="3.9" rx="0.7" transform="rotate(315 12 12)"/></svg></span>
+          <h3>Settings</h3>
+        </div>
+        <p>The cog opens Settings — the highlight button, read-aloud voices, the backend picker, and what's saved all live here.</p>
+      </div>
+      <div class="uicard">
+        <div class="ch"><h3>Reuse an earlier message</h3></div>
+        <p>Press <span class="kbd">↑</span> / <span class="kbd">↓</span> in the message box to bring back something you asked before, to send again or edit.</p>
+      </div>
+      <div class="uicard">
+        <div class="ch"><h3>Stop a reply</h3></div>
+        <p>While an answer is being written, the send button becomes <b>Stop</b> — click it to cut a long reply short.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTROL -->
+<section id="privacy">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Staying in control</p>
+      <h2>You decide what's kept.</h2>
+      <p>Conversations are saved on your Mac so you can reopen them — your messages, the text you brought in, the pages you chatted about, and a web answer's source links. Deleting a chat and “forget this page” live on an admin page you open from the companion app's menu-bar icon.</p>
+    </div>
+    <div class="control-grid">
+      <div>
+        <div class="baseline"><b>Always, no setting:</b> the page text you ask about and your words go to the assistant you chose. That's how it answers.</div>
+        <p style="color:var(--soft);font-size:15px;margin-bottom:14px">Everything below is <b>off by default</b> — each is explained next to its switch in Settings.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Setting</th><th>What it does</th><th>Leaves your Mac?</th></tr></thead>
+            <tbody>
+              <tr><td>Highlight button</td><td>Shows the “Ask in Sidecar” button on selected text.</td><td class="no">No — not until you click it</td></tr>
+              <tr><td>Save the pictures</td><td>Keeps captured/attached images in the saved chat.</td><td class="no">No — on your Mac</td></tr>
+              <tr><td>Remember listening</td><td>Saves the video transcripts you captured.</td><td class="no">No — on your Mac</td></tr>
+              <tr><td>Look at the page</td><td>Lets the assistant grab a screenshot when a question seems visual.</td><td class="yes">The screenshot, to your assistant</td></tr>
+              <tr><td>Show web pictures</td><td>Reveals pictures of what you asked about (after you click).</td><td class="yes">Yes — opens web pages to find them</td></tr>
+              <tr><td>Open live pages</td><td>Lets a search open pages for more detail.</td><td class="yes">Yes — via your subscription</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fart">
+        <div class="panel-frame"><img src="assets/screenshots/settings.png" width="1536" height="2560" alt="Sidecar's Settings view, showing off-by-default toggles for its optional features." /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Sidecar"><span class="mark"><svg viewBox="0 0 128 128" width="24" height="24" aria-hidden="true"><rect width="128" height="128" rx="27" fill="#3a7d72"/><rect x="21" y="29" width="53" height="70" rx="11" fill="#fff"/><rect x="80" y="45" width="27" height="54" rx="8" fill="#fff"/><circle cx="88.5" cy="87" r="3.4" fill="#e0a838"/></svg></span><span class="name" style="font-size:16px">Sidecar</span></a>
+    <span>Runs on your own Mac. For Chrome &amp; Brave. No server of ours in the middle.</span>
+    <span class="rt">Reviewed against Sidecar 0.1.5 · 2026-09-12</span>
+  </div>
+</footer>
+
+</body>
+</html>
