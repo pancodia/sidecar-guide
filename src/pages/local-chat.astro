@@ -1,0 +1,146 @@
+---
+import Base from "../layouts/Base.astro";
+const title = "How local chat works — Sidecar";
+const description =
+  "Local chat runs a private AI model on your own Mac — no account, no cloud, nothing leaves your computer. Here's what the three parts are (Assistant, Engine, Model) and how a message flows through them.";
+// NOTE: this page is intentionally NOT in the nav yet — local chat is a preview and isn't in the released
+// build. When it ships, add it to Nav.astro (and drop the "Preview" badge below).
+---
+<Base title={title} description={description} active="local-chat">
+  <section class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">Local chat <span class="preview">Preview</span></p>
+      <h1>How local chat works.</h1>
+      <p class="lead">Local chat runs a private AI model on your own Mac — no account, no cloud, nothing leaving
+        your computer. It's three small parts that set themselves up and work together. Only the last one, the
+        AI model, is a real download; the other two are lightweight helpers. Here's what each one does.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:8px">
+    <div class="wrap">
+      <div class="lc-parts">
+        <div class="lc-card">
+          <p class="lc-role">Assistant</p>
+          <h3>The go-between</h3>
+          <p class="lc-tech"><code>pi</code></p>
+          <p>Takes your message and any screenshot, packages the conversation, and relays the reply back —
+            running locked down, allowed to reach only the model.</p>
+          <p class="lc-analogy">the helper that talks to you and passes it along</p>
+          <p class="lc-size">already on your Mac · ~30&nbsp;MB</p>
+        </div>
+
+        <div class="lc-card">
+          <p class="lc-role">Engine</p>
+          <h3>The runner</h3>
+          <p class="lc-tech"><code>Ollama</code></p>
+          <p>Loads the AI model into memory and does the actual computing — turning the conversation into an
+            answer, word by word.</p>
+          <p class="lc-analogy">the machine that powers the brain</p>
+          <p class="lc-size">downloads once · ~0.5&nbsp;GB</p>
+        </div>
+
+        <div class="lc-card lc-star">
+          <p class="lc-role">Model</p>
+          <h3>The AI itself</h3>
+          <p class="lc-tech"><code>qwen3.5</code></p>
+          <p>The brain — it understands your words and images and writes the reply. This is the intelligence;
+            everything else just carries messages to and from it.</p>
+          <p class="lc-analogy">the brain that reads and replies</p>
+          <p class="lc-size">the big download · a few&nbsp;GB</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">One message, start to finish</p>
+        <h2>You talk to the Assistant, it asks the Engine to run the Model — and the answer comes back.</h2>
+      </div>
+
+      <div class="lc-machine">
+        <span class="lc-tag">◍ Your Mac</span>
+        <div class="lc-flow">
+          <div class="lc-node"><b>You</b><span>type in the panel, maybe capture the screen</span></div>
+          <span class="lc-arrow" aria-hidden="true">→</span>
+          <div class="lc-node"><b>Assistant</b><span>packages your message</span></div>
+          <span class="lc-arrow" aria-hidden="true">→</span>
+          <div class="lc-node"><b>Engine</b><span>loads &amp; runs the model</span></div>
+          <span class="lc-arrow" aria-hidden="true">→</span>
+          <div class="lc-node lc-node-star"><b>Model</b><span>reads and writes the reply</span></div>
+        </div>
+        <p class="lc-back"><span aria-hidden="true">←</span> The reply streams back the same path, in reverse — Model → Engine → Assistant → the panel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:28px;padding-bottom:8px">
+    <div class="wrap">
+      <div class="lc-privacy">
+        <span class="lc-lock" aria-hidden="true">🔒</span>
+        <p><b>Private by design.</b> All three parts run on your Mac. Your messages, images, and screen
+          captures are never sent to a company or the internet — the model does its thinking locally, and
+          works with no connection at all.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .preview {
+      font-family: var(--body); font-size: .62em; letter-spacing: .06em; vertical-align: middle;
+      margin-left: 8px; padding: 2px 8px; border-radius: 999px; text-transform: uppercase;
+      background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--accent-ink);
+      border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--border));
+    }
+    .lead { max-width: 62ch; }
+
+    .lc-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .lc-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px 22px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px;
+    }
+    .lc-card.lc-star { border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      background: color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+    .lc-role { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent); margin: 0; }
+    .lc-card h3 { font-family: var(--display); font-weight: 600; font-size: 22px; margin: 0; line-height: 1.1; }
+    .lc-tech { margin: -2px 0 4px; }
+    .lc-tech code { font-family: var(--mono); font-size: 12.5px; color: var(--accent-ink);
+      background: color-mix(in srgb, var(--accent) 10%, transparent); padding: 2px 8px; border-radius: 7px; }
+    .lc-card p { margin: 0; color: var(--soft); font-size: 15px; line-height: 1.55; }
+    .lc-analogy { color: var(--faint) !important; font-style: italic; font-size: 13.5px !important; margin-top: auto !important; }
+    .lc-size { font-family: var(--mono); font-size: 12px !important; color: var(--faint) !important;
+      padding-top: 8px; border-top: 1px solid var(--border); }
+
+    .lc-machine {
+      position: relative; margin-top: 22px; border: 1.5px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+      border-radius: 18px; padding: 30px 22px 22px; background: color-mix(in srgb, var(--accent) 4%, transparent);
+    }
+    .lc-tag { position: absolute; top: -12px; left: 22px; background: var(--bg); padding: 0 10px;
+      font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--accent-ink); }
+    .lc-flow { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; }
+    .lc-arrow { align-self: center; color: var(--accent); font-size: 24px; line-height: 1; }
+    .lc-node { flex: 1 1 150px; min-width: 140px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 14px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px; }
+    .lc-node.lc-node-star { border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+    .lc-node b { font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--ink); }
+    .lc-node span { color: var(--faint); font-size: 13px; line-height: 1.4; }
+    .lc-back { margin: 16px 2px 0; color: var(--faint); font-size: 14px; }
+    .lc-back span { color: var(--accent); font-size: 17px; }
+
+    .lc-privacy { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border-radius: 14px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border)); }
+    .lc-privacy .lc-lock { color: var(--accent); flex: 0 0 auto; font-size: 18px; }
+    .lc-privacy p { margin: 0; color: var(--ink); font-size: 15.5px; line-height: 1.55; }
+
+    @media (max-width: 640px) {
+      .lc-flow { flex-direction: column; }
+      .lc-arrow { transform: rotate(90deg); align-self: center; }
+    }
+  </style>
+</Base>
