@@ -1,0 +1,54 @@
+---
+// The FORMAL privacy policy — the page the Chrome Web Store links to. It renders the canonical
+// policy markdown (../../PRIVACY.md at the repo root) through the site layout, so there is ONE
+// source of truth: edit PRIVACY.md, push, and this page (and the store's link) update automatically.
+// The friendlier /privacy explainer stays a separate page; this is the full text.
+import Base from "../layouts/Base.astro";
+import { Content } from "../../PRIVACY.md";
+const title = "Sidecar privacy policy";
+const description =
+  "The full Sidecar privacy policy: what the extension accesses, where information goes, and what stays on your own computer. The single source for the Chrome Web Store listing.";
+---
+<Base title={title} description={description} active="privacy">
+  <section class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">Privacy policy</p>
+      <h1>The full policy.</h1>
+      <p>This is the complete, canonical privacy policy — the one the Chrome Web Store links to. For a
+        friendlier walk-through, see the <a href="privacy.html">Privacy &amp; control</a> page.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:8px;padding-bottom:24px">
+    <div class="wrap">
+      <article class="policy">
+        <Content />
+      </article>
+    </div>
+  </section>
+
+  <style>
+    .policy { max-width: 72ch; }
+    /* The canonical markdown renders as bare h1/h2/p/ul/a/code/blockquote — style them on the site
+       tokens so the policy reads as part of the site, not a raw dump. */
+    .policy :global(h1) { font-family: var(--display); font-weight: 600; font-size: 30px; line-height: 1.15;
+      margin: 0 0 8px; color: var(--ink); }
+    .policy :global(h2) { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.2;
+      margin: 34px 0 10px; padding-top: 18px; border-top: 1px solid var(--border); color: var(--ink); }
+    .policy :global(h3) { font-family: var(--body); font-weight: 600; font-size: 16px; margin: 20px 0 6px; color: var(--ink); }
+    .policy :global(p), .policy :global(li) { font-family: var(--body); font-size: 15.5px; line-height: 1.6; color: var(--soft); }
+    .policy :global(p) { margin: 0 0 12px; }
+    .policy :global(ul), .policy :global(ol) { margin: 0 0 14px; padding-left: 22px; }
+    .policy :global(li) { margin: 4px 0; }
+    .policy :global(li) :global(p) { margin: 0; }
+    .policy :global(a) { color: var(--accent-ink); text-decoration: underline; text-underline-offset: 2px; }
+    .policy :global(strong) { color: var(--ink); font-weight: 600; }
+    .policy :global(em) { color: var(--faint); }
+    .policy :global(code) { font-family: var(--mono); font-size: 13px; background: var(--surface-2);
+      padding: 1px 6px; border-radius: 6px; color: var(--accent-ink); }
+    .policy :global(blockquote) { margin: 14px 0; padding: 10px 16px; border-left: 3px solid var(--border);
+      background: var(--surface-2); border-radius: 0 10px 10px 0; }
+    .policy :global(blockquote) :global(p) { margin: 0; color: var(--faint); }
+    .policy :global(hr) { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+  </style>
+</Base>
