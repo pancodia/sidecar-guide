@@ -97,6 +97,11 @@ const base = import.meta.env.BASE_URL;
         <p>Sidecar itself doesn't include an AI — you point it at one. Pick either route; you can switch
           any time in <b>Settings → Backend</b>, and choose per message from the composer's model menu.</p></div>
 
+      <figure class="shot-fig">
+        <div class="status-shot"><img src={`${base}assets/screenshots/backend-picker.png`} width={844} height={478} loading="lazy" alt="Settings → Backend with three choices: Claude Code (your Claude subscription), Codex (your ChatGPT subscription), and Pi (local) — a local model on your computer, private and offline." /></div>
+        <figcaption><b>Settings → Backend</b> — pick who answers. "Pi (local)" is local chat.</figcaption>
+      </figure>
+
       <div class="two-routes">
         <article class="route">
           <p class="route-tag">Route A · your subscription</p>
@@ -121,6 +126,10 @@ const base = import.meta.env.BASE_URL;
           <p style="margin-top:12px">It checks your free disk first and shows progress. When it's ready,
             pick <b>Pi (local)</b> in <b>Settings → Backend</b>. Already run your own Ollama? Sidecar
             detects it and skips the engine step. <a href={`${base}local-chat.html`}>How local chat works →</a></p>
+          <figure class="shot-fig">
+            <div class="status-shot"><img src={`${base}assets/screenshots/local-chat-setup.png`} width={844} height={456} loading="lazy" alt="The 'Set up local chat' card: a three-step plan — Assistant, Engine, and AI model (qwen3.5:9b, about 6.6 GB), each marked 'Will download' — with a 'Set up local chat' button." /></div>
+            <figcaption>One click sets up all three parts; steps you already have are skipped.</figcaption>
+          </figure>
         </article>
       </div>
     </div>
