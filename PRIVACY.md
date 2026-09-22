@@ -1,6 +1,6 @@
 # Sidecar — Privacy Policy
 
-_Last updated: 2026-09-19_
+_Last updated: 2026-09-21_
 
 Sidecar is a **local-first** browser extension. It helps you chat with your own
 AI assistant — **Claude Code** (your Claude subscription), **Codex** (your
