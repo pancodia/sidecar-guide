@@ -1,6 +1,6 @@
 # Sidecar — Privacy Policy
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-30_
 
 Sidecar is a **local-first** browser extension. It helps you chat with your own
 AI assistant — **Claude Code** (your Claude subscription), **Codex** (your
@@ -44,6 +44,13 @@ Sidecar accesses, where that information goes, and what is kept.
   decides **on your own computer** whether a question needs the page, using only
   your question text and that page's title and address — nothing new leaves your
   machine, and when in doubt it includes the page.
+- **The current date, time and time zone on your computer** — sent with each
+  question, so the assistant can answer "what time is it?", "what's today's
+  date?" or "how long ago was this posted?" correctly. With Claude Code or Codex,
+  this means your time zone (for example "America/Los_Angeles") reaches Anthropic
+  or OpenAI, a rough hint of where you are; your internet address, which every
+  request carries anyway, usually says as much. With local chat it never leaves
+  your Mac. Sidecar doesn't keep it in your saved conversations.
 - **The audio of a tab, only when you start listening** — so Sidecar can
   transcribe a video you are watching. Nothing is captured until you begin, and
   it stops when you stop.
